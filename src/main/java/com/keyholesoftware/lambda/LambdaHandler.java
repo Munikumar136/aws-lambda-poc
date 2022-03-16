@@ -9,9 +9,10 @@ import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 
-public class LambdaHandler implements RequestStreamHandler {
+public class LambdaHandler implements RequestHandler<String, Object> {
 
     private static SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
@@ -27,10 +28,8 @@ public class LambdaHandler implements RequestStreamHandler {
     }
 
     @Override
-    public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-        handler.proxyStream(inputStream, outputStream, context);
-
-        // just in case it wasn't closed by the mapper
-        outputStream.close();
+    public Object handleRequest(String s, Context context) {
+        context.getLogger().log("Processing input content"+s);
+        return "-----My Lambda function Invoked-----"+s;
     }
 }
